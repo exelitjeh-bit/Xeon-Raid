@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XEON • Raid Planner</title>
+<style>
+:root{--o:#ff7a00;--og:#ffb52e;--g:#35ff78;--r:#ff4038;--y:#ffd21c;--b:#35d9ff;--bg:#050707;--p:#0e1312;--p2:#151b19;--line:#29312f;--text:#f4f5f0;--muted:#89928f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Segoe UI,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;background:radial-gradient(circle at 75% 5%,#10351c 0,transparent 24%),radial-gradient(circle at 25% 10%,#351704 0,transparent 22%),linear-gradient(135deg,#040606,#0a0e0d 55%,#050707)}
+.banner{height:185px;position:relative;overflow:hidden;border-bottom:1px solid var(--o);background:radial-gradient(circle at 18% 80%,#9b3c0060,transparent 25%),radial-gradient(circle at 80% 55%,#22e86a55,transparent 28%),linear-gradient(110deg,#1a0902,#07120b 50%,#12240e)}
+.banner:before{content:"";position:absolute;inset:-30%;background:repeating-conic-gradient(from 20deg,transparent 0 8deg,#35ff7810 8.5deg 9deg,transparent 9.5deg 15deg);animation:spin 35s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.logo{position:absolute;left:25px;top:25px;width:145px;text-align:center;z-index:2}.mark{height:85px;width:85px;margin:auto;transform:rotate(45deg);border:3px solid var(--o);display:grid;place-items:center;box-shadow:0 0 30px #ff7a0060,inset 0 0 25px #35ff7825;background:#030606cc}.mark span{transform:rotate(-45deg);font-size:43px;font-weight:1000;letter-spacing:-7px;background:linear-gradient(135deg,#fff,var(--o),var(--g));-webkit-background-clip:text;color:transparent}.xeon{margin-top:16px;font-weight:1000;letter-spacing:8px;font-size:21px}.more{font-size:8px;letter-spacing:2px;color:var(--og)}
+.hero{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center}.hero h1{margin:0;font:900 62px Georgia;letter-spacing:14px;text-shadow:0 0 25px #35ff7830}.hero p{margin:5px 0;color:#d4d6cb;font-size:11px;letter-spacing:6px}.heroRaid{position:absolute;right:30px;top:32px;text-align:right;font:28px Georgia;color:#9cffb5;z-index:2}.heroRaid small{display:block;color:#eee;font:9px Segoe UI;letter-spacing:3px;margin-top:8px}
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 185px)}.side{border-right:1px solid #ff7a0038;background:#080b0bcc;padding:12px}.nav{width:100%;border:0;background:transparent;color:#aeb7b3;text-align:left;padding:13px;border-left:3px solid transparent;border-radius:4px;margin:2px 0;transition:.18s}.nav:hover,.nav.active{color:#fff;background:linear-gradient(90deg,#ff7a0025,transparent);border-left-color:var(--o);box-shadow:inset 0 0 20px #ff7a0008}.nav i{display:inline-block;width:28px;color:var(--o);font-style:normal;font-size:17px}
+main{padding:18px;max-width:1600px;width:100%;margin:auto}.view{display:none}.view.active{display:block}.toolbar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}.toolbar div{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid #ff7a0045;background:#0d1211;color:#ddd;border-radius:5px;padding:10px 14px}.btn:hover{border-color:var(--o);box-shadow:0 0 15px #ff7a0017}.primary{background:linear-gradient(135deg,#ff8500,#bd4300);border-color:#ffad4c;color:#fff;font-weight:800}.green{border-color:#35ff7855;color:var(--g)}.danger{border-color:#ff403855;color:#ff7770}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px}.card{background:linear-gradient(145deg,#121816f5,#080b0af8);border:1px solid #ff7a0038;border-radius:7px;box-shadow:0 15px 40px #0007;overflow:hidden}.pad{padding:17px}.title{font:25px Georgia;color:#fff;letter-spacing:2px}.subtitle{color:#8cffad;font-size:10px;letter-spacing:2px;margin-top:5px}.raidhead{padding:20px;background:radial-gradient(circle at 80% 10%,#35ff7820,transparent 28%),radial-gradient(circle at 10% 100%,#ff7a0018,transparent 30%);border-bottom:1px solid #ff7a0038}.meta{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:16px}.metaBox{padding:11px;background:#0005;border:1px solid #ffffff0d;border-radius:5px}.metaBox small{display:block;color:#7e8884;font-size:8px;text-transform:uppercase;letter-spacing:1px}.metaBox strong{display:block;margin-top:5px;font-size:12px}
+.tabs{display:flex;border-bottom:1px solid #ff7a0038;overflow:auto}.tab{border:0;background:0;color:#89918e;padding:12px 16px;border-bottom:2px solid transparent}.tab.active{color:#fff;border-color:var(--o)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}input,select,textarea{background:#080b0a;color:#eee;border:1px solid #29312f;border-radius:5px;padding:10px;outline:0}input:focus,select:focus,textarea:focus{border-color:var(--o)}.search{flex:1;min-width:180px}
+table{width:100%;border-collapse:collapse;min-width:800px;font-size:12px}th{font-size:9px;color:#7e8985;text-transform:uppercase;letter-spacing:1px;text-align:left;padding:10px 7px;border-bottom:1px solid #29312f}td{padding:9px 7px;border-bottom:1px solid #1d2422}tr:hover td{background:#ff7a0008}.status{font-size:10px;font-weight:800;border-radius:4px;padding:6px 8px;min-width:100px}.Attending{color:var(--g);border-color:#35ff7860;background:#35ff7814}.Maybe{color:var(--y);border-color:#ffd21c60;background:#ffd21c10}.Absent{color:#ff7068;border-color:#ff403860;background:#ff403810}.NoResponse{color:#bdc5c2;border-color:#68716e;background:#68716e12}.tank{color:#65b8ff}.healer{color:#46ffae}.dps{color:#ff6660}.actions button{background:0;border:0;color:#aaa;padding:4px}.actions button:hover{color:#fff}
+.progress{display:flex;gap:14px;align-items:center}.donut{width:125px;height:125px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--g) 0 40%,var(--y) 40% 55%,var(--r) 55% 65%,#343b39 65%);position:relative}.donut:after{content:"";position:absolute;inset:13px;background:#090d0c;border-radius:50%}.donut div{position:relative;z-index:1;text-align:center}.donut b{display:block;font-size:22px}.donut small{font-size:8px;color:#88918d}.legend{line-height:2;font-size:11px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px}.dg{background:var(--g)}.dy{background:var(--y)}.dr{background:var(--r)}.dw{background:#9ba39f}.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}.rolebox{text-align:center;padding:10px 4px;background:#080c0b;border:1px solid #26302d;border-radius:5px}.rolebox b{font-size:18px;display:block}.rolebox small{font-size:8px;color:#7f8985;letter-spacing:1px}.quick{display:grid;gap:7px}.boss{display:flex;justify-content:space-between;padding:9px;border-bottom:1px solid #1d2422;font-size:11px}.done{color:var(--g)}.current{color:var(--og)}.locked{color:#69726f}
+.pageHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.pageHead h2{font:30px Georgia;margin:0}.muted{color:var(--muted)}.statGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:18px}.stat small{color:#7f8986;text-transform:uppercase;font-size:9px;letter-spacing:1px}.stat strong{font-size:28px;display:block;margin-top:8px}.bar{height:8px;background:#202725;border-radius:20px;overflow:hidden;margin-top:10px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--o),var(--g));width:50%}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid #29312f}.calHead{padding:10px;text-align:center;background:#111615;color:#929b97;font-size:9px;text-transform:uppercase}.day{min-height:110px;border:1px solid #1e2523;padding:8px;background:#090d0c}.day.mutedDay{opacity:.4}.day.today{box-shadow:inset 0 0 0 1px var(--o)}.daynum{font-weight:800}.event{margin-top:8px;padding:6px;border-left:3px solid var(--o);background:#ff7a0014;border-radius:3px;font-size:10px;cursor:pointer}.event.heroic{border-color:var(--g);background:#35ff7810}.event.mythic{border-color:#b26cff;background:#b26cff12}
+.playerCards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.pcard{padding:15px}.pcard h3{margin:0 0 4px}.pcard .line{font-size:11px;color:#8e9894;margin:4px 0}.pcard .pc-actions{margin-top:12px;display:flex;gap:6px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:9px;color:#89938f;text-transform:uppercase;letter-spacing:1px}.modalbg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modalbg.show{display:flex}.modal{width:min(680px,100%);background:#0d1211;border:1px solid var(--o);padding:20px;border-radius:7px;box-shadow:0 0 60px #000}.modal h3{font:24px Georgia;margin:0 0 17px}.modalfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:17px}.toast{position:fixed;right:20px;bottom:20px;background:#101715;border:1px solid var(--g);padding:12px 15px;border-radius:5px;display:none;z-index:60}.toast.show{display:block;animation:fade 2.5s forwards}@keyframes fade{0%,75%{opacity:1}100%{opacity:0}}
+.settingsGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.settingRow{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #202725}.switch{width:45px;height:24px;border-radius:20px;background:#303735;position:relative;border:0}.switch:after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;left:3px;top:3px;background:#999;transition:.2s}.switch.on{background:#35ff7840}.switch.on:after{left:24px;background:var(--g)}
+@media(max-width:1050px){.grid2{grid-template-columns:1fr}.meta{grid-template-columns:repeat(3,1fr)}.statGrid{grid-template-columns:repeat(2,1fr)}.playerCards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.banner{height:145px}.hero h1{font-size:36px;letter-spacing:7px}.hero p{font-size:7px}.heroRaid{display:none}.logo{transform:scale(.72);transform-origin:top left;left:8px}.layout{grid-template-columns:1fr}.side{display:flex;overflow:auto;padding:5px}.nav{min-width:125px}.main{padding:10px}.meta{grid-template-columns:1fr 1fr}.statGrid,.playerCards,.settingsGrid{grid-template-columns:1fr}.calendar{min-width:700px}.calendarWrap{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="banner">
+  <div class="logo"><div class="mark"><span>X</span></div><div class="xeon">XEON</div><div class="more">MORE THAN A GUILD</div></div>
+  <div class="hero"><h1>XEON</h1><p>PLAY • PROGRESS • BELONG • FOREVER</p></div>
+  <div class="heroRaid">THE VENEMOUS<br>ABYSS<small>MIDNIGHT • SEASON 2</small></div>
+</header>
+<div class="layout">
+<aside class="side">
+<button class="nav active" data-view="dashboard"><i>⌂</i>Dashboard</button>
+<button class="nav" data-view="raid"><i>⚔</i>Raid Planner</button>
+<button class="nav" data-view="calendar"><i>▣</i>Calendar</button>
+<button class="nav" data-view="players"><i>♟</i>Players</button>
+<button class="nav" data-view="statistics"><i>▥</i>Statistics</button>
+<button class="nav" data-view="settings"><i>⚙</i>Settings</button>
+</aside>
+
+<main>
+<!-- DASHBOARD -->
+<section id="dashboard" class="view active">
+<div class="pageHead"><div><h2>Guild Dashboard</h2><div class="muted">XEON raid operations at a glance.</div></div><button class="btn primary" onclick="openRaid()">＋ New Raid</button></div>
+<div class="statGrid">
+<div class="card stat"><small>Upcoming Raids</small><strong id="dashRaids">0</strong><div class="muted">Scheduled events</div></div>
+<div class="card stat"><small>Players</small><strong id="dashPlayers">0</strong><div class="muted">Guild roster</div></div>
+<div class="card stat"><small>Attendance</small><strong id="dashAttendance">0%</strong><div class="bar"><span id="dashBar"></span></div></div>
+<div class="card stat"><small>Next Raid</small><strong id="dashNext" style="font-size:18px">—</strong><div class="muted" id="dashNextDate"></div></div>
+</div>
+<div style="height:14px"></div>
+<div class="grid2">
+<div class="card pad"><div class="title">Upcoming Raids</div><div class="muted" style="margin:5px 0 15px">Open any raid to manage attendance.</div><div id="dashRaidList"></div></div>
+<div class="card pad"><div class="title">Attendance</div><div class="progress"><div class="donut" id="dashDonut"><div><b id="dashDonutText">0%</b><small>ATTENDANCE</small></div></div><div class="legend" id="dashLegend"></div></div></div>
+</div>
+</section>
+
+<!-- RAID -->
+<section id="raid" class="view">
+<div class="toolbar"><div><button class="btn primary" onclick="openRaid()">＋ New Raid</button><button class="btn green" onclick="openPlayer()">＋ Add Player</button><button class="btn" onclick="exportData()">⇩ Export</button><label class="btn">⇧ Import<input id="importFile" type="file" accept=".json" hidden></label></div><div><button class="btn danger" onclick="deleteCurrentRaid()">Delete Raid</button></div></div>
+<div class="grid2">
+<div class="card">
+<div class="raidhead"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="title" id="rName">The Venemous Abyss</div><div class="subtitle" id="rTagline"></div></div><button class="btn" onclick="openRaid(currentRaidId)">✎ Edit Raid</button></div>
+<div class="meta"><div class="metaBox"><small>Date</small><strong id="rDate"></strong></div><div class="metaBox"><small>Start</small><strong id="rStart"></strong></div><div class="metaBox"><small>End</small><strong id="rEnd"></strong></div><div class="metaBox"><small>Meet Up</small><strong id="rMeet"></strong></div><div class="metaBox"><small>Difficulty</small><strong id="rDiff"></strong></div></div></div>
+<div class="tabs"><button class="tab active">⚔ Roster</button><button class="tab">▤ Summary</button><button class="tab">▤ Notes</button><button class="tab">⌁ Boss Progress</button></div>
+<div class="pad"><div class="filters"><input id="search" class="search" placeholder="Search players..."><select id="classFilter"><option value="">All Classes</option></select><select id="roleFilter"><option value="">All Roles</option><option>Tank</option><option>Healer</option><option>DPS</option></select><select id="statusFilter"><option value="">All Status</option><option>Attending</option><option>Maybe</option><option>Absent</option><option>No Response</option></select></div><div style="overflow:auto"><table><thead><tr><th>#</th><th>Player</th><th>Class</th><th>Spec</th><th>Role</th><th>Status</th><th>Note</th><th>Actions</th></tr></thead><tbody id="roster"></tbody></table></div></div>
+</div>
+<aside class="side2">
+<div class="card pad"><div class="title" style="font-size:15px;color:var(--og)">Raid Progress</div><div class="progress"><div class="donut" id="donut"><div><b id="count">0/20</b><small>PLAYERS</small></div></div><div class="legend" id="legend"></div></div><div class="roles"><div class="rolebox"><b id="tank">0/2</b><small>TANK</small></div><div class="rolebox"><b id="heal">0/4</b><small>HEALER</small></div><div class="rolebox"><b id="dps">0/14</b><small>DPS</small></div></div></div>
+<div class="card pad"><div class="title" style="font-size:15px;color:var(--og)">Quick Actions</div><div class="quick"><button class="btn green" onclick="setAll('Attending')">✓ Mark All Attending</button><button class="btn" style="color:var(--y)" onclick="setAll('Maybe')">? Mark All Maybe</button><button class="btn danger" onclick="setAll('Absent')">✕ Mark All Absent</button><button class="btn" onclick="setAll('No Response')">◷ Clear Attendance</button></div></div>
+<div class="card pad"><div class="title" style="font-size:15px;color:var(--og)">Boss Progress</div><div id="bosses"></div></div>
+</aside>
+</div>
+</section>
+
+<!-- CALENDAR -->
+<section id="calendar" class="view">
+<div class="pageHead"><div><h2>Raid Calendar</h2><div class="muted" id="monthLabel"></div></div><div><button class="btn" onclick="changeMonth(-1)">‹</button><button class="btn" onclick="goToday()">Today</button><button class="btn" onclick="changeMonth(1)">›</button><button class="btn primary" onclick="openRaid()">＋ New Raid</button></div></div>
+<div class="card pad"><div class="calendarWrap"><div class="calendar" id="calendarGrid"></div></div></div>
+</section>
+
+<!-- PLAYERS -->
+<section id="players" class="view">
+<div class="pageHead"><div><h2>Guild Players</h2><div class="muted">Manage your reusable player roster.</div></div><button class="btn primary" onclick="openPlayer()">＋ Add Player</button></div>
+<div class="filters"><input class="search" id="playerSearch" placeholder="Search players..."><select id="playerRoleFilter"><option value="">All Roles</option><option>Tank</option><option>Healer</option><option>DPS</option></select></div>
+<div class="playerCards" id="playerCards"></div>
+</section>
+
+<!-- STATISTICS -->
+<section id="statistics" class="view">
+<div class="pageHead"><div><h2>Statistics</h2><div class="muted">Attendance and roster overview.</div></div></div>
+<div class="statGrid"><div class="card stat"><small>Total Players</small><strong id="sPlayers">0</strong></div><div class="card stat"><small>Attending</small><strong id="sAttending">0</strong></div><div class="card stat"><small>Maybe</small><strong id="sMaybe">0</strong></div><div class="card stat"><small>Absent</small><strong id="sAbsent">0</strong></div></div>
+<div style="height:14px"></div><div class="grid2"><div class="card pad"><div class="title">Role Distribution</div><div id="roleStats" style="margin-top:15px"></div></div><div class="card pad"><div class="title">Attendance Breakdown</div><div id="attStats" style="margin-top:15px"></div></div></div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="view">
+<div class="pageHead"><div><h2>Settings</h2><div class="muted">Customize your local XEON planner.</div></div></div>
+<div class="settingsGrid">
+<div class="card pad"><div class="title" style="font-size:19px">Guild Settings</div>
+<div class="field" style="margin-top:15px"><label>Guild Name</label><input id="setGuild"></div>
+<div class="field" style="margin-top:10px"><label>Default Raid Start</label><input id="setStart" type="time"></div>
+<div class="field" style="margin-top:10px"><label>Default Raid End</label><input id="setEnd" type="time"></div>
+<button class="btn primary" style="margin-top:14px" onclick="saveSettings()">Save Settings</button></div>
+<div class="card pad"><div class="title" style="font-size:19px">Preferences</div>
+<div class="settingRow"><span>Animated effects <small class="muted">visual glow and motion</small></span><button class="switch on" id="fxSwitch" onclick="toggleFx()"></button></div>
+<div class="settingRow"><span>Compact roster</span><button class="switch" id="compactSwitch" onclick="toggleCompact()"></button></div>
+<div class="settingRow"><span>Confirm deletions</span><button class="switch on" id="confirmSwitch" onclick="toggleConfirm()"></button></div>
+<button class="btn danger" style="margin-top:16px" onclick="clearAllData()">Reset all local data</button></div>
+</div>
+</section>
+</main></div></div>
+
+<div class="modalbg" id="modalbg"><div class="modal"><h3 id="modalTitle"></h3><div id="modalForm"></div><div class="modalfoot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="modalSave">Save</button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='xeonRaidPlannerV2';
+const demoPlayers=[
+{name:'Zaroth',class:'Warrior',spec:'Protection',role:'Tank',status:'Attending',note:'Ready!'},
+{name:'Elunara',class:'Priest',spec:'Holy',role:'Healer',status:'Attending',note:'—'},
+{name:'Thalorin',class:'Druid',spec:'Restoration',role:'Healer',status:'Maybe',note:'Work until 19:00'},
+{name:'Draevox',class:'Mage',spec:'Frost',role:'DPS',status:'Attending',note:'—'},
+{name:'Sylveris',class:'Hunter',spec:'Beast Mastery',role:'DPS',status:'Attending',note:'Bring flasks'},
+{name:'Khaelis',class:'Warlock',spec:'Destruction',role:'DPS',status:'Absent',note:'Vacation'},
+{name:'Morgrimm',class:'Rogue',spec:'Assassination',role:'DPS',status:'Attending',note:'—'},
+{name:'Nyxira',class:'Evoker',spec:'Devastation',role:'DPS',status:'No Response',note:'—'},
+{name:'Kaelthas',class:'Paladin',spec:'Retribution',role:'DPS',status:'Maybe',note:'Not sure yet'},
+{name:'Velthara',class:'Shaman',spec:'Elemental',role:'DPS',status:'Attending',note:'—'}
+];
+function datePlus(n){let d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+const demo={guild:'XEON',settings:{start:'20:00',end:'23:00',fx:true,compact:false,confirm:true},players:demoPlayers.map((p,i)=>({...p,id:i+1})),raids:[
+{id:1,name:'The Venemous Abyss',tagline:'SOME THINGS SHOULD STAY BENEATH THE SURFACE...',date:datePlus(4),start:'20:00',end:'23:00',meet:'19:45',difficulty:'Heroic',bosses:[{name:'The Abyssal Gate',state:'done'},{name:'Venom Lord',state:'done'},{name:'The Rotbound Colossus',state:'current'},{name:'Mistress of the Deep',state:'locked'},{name:'Abyssal Overlord',state:'locked'}]}
+]};
+let data=load(),currentRaidId=data.raids[0]?.id||null,calDate=new Date();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||structuredClone(demo)}catch{return structuredClone(demo)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function esc(x){return String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function toast(x){let t=document.getElementById('toast');t.textContent=x;t.classList.remove('show');void t.offsetWidth;t.classList.add('show')}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.view===v));if(v==='dashboard')renderDashboard();if(v==='raid')renderRaid();if(v==='calendar')renderCalendar();if(v==='players')renderPlayers();if(v==='statistics')renderStats();if(v==='settings')renderSettings()}
+document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>showView(n.dataset.view));
+function current(){return data.raids.find(r=>r.id===currentRaidId)||data.raids[0]}
+function fmtDate(s){if(!s)return'—';return new Date(s+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
+function openRaid(id=null){
+let r=id?data.raids.find(x=>x.id===id):null;
+if(!r) r={name:'',tagline:'',date:datePlus(7),start:data.settings.start,end:data.settings.end,meet:'19:45',difficulty:'Normal'};
+document.getElementById('modalTitle').textContent=id?'Edit Raid':'Create Raid';
+document.getElementById('modalForm').innerHTML=`<div class="formgrid">
+<div class="field full"><label>Raid Name</label><input id="fName" value="${esc(r.name)}"></div>
+<div class="field full"><label>Tagline</label><input id="fTag" value="${esc(r.tagline)}"></div>
+<div class="field"><label>Date</label><input id="fDate" type="date" value="${esc(r.date)}"></div>
+<div class="field"><label>Difficulty</label><select id="fDiff"><option>Normal</option><option>Heroic</option><option>Mythic</option></select></div>
+<div class="field"><label>Start Time</label><input id="fStart" type="time" value="${esc(r.start)}"></div>
+<div class="field"><label>End Time</label><input id="fEnd" type="time" value="${esc(r.end)}"></div>
+<div class="field"><label>Meet Up</label><input id="fMeet" type="time" value="${esc(r.meet)}"></div></div>`;
+fDiff.value=r.difficulty;
+document.getElementById('modalSave').onclick=()=>{
+let obj={name:fName.value.trim()||'Untitled Raid',tagline:fTag.value.trim()||'RAID TOGETHER • GROW TOGETHER',date:fDate.value,start:fStart.value,end:fEnd.value,meet:fMeet.value,difficulty:fDiff.value};
+if(id){Object.assign(data.raids.find(x=>x.id===id),obj);currentRaidId=id}else{let nr={id:Date.now(),...obj,bosses:[{name:'Boss 1',state:'current'},{name:'Boss 2',state:'locked'},{name:'Boss 3',state:'locked'}]};data.raids.push(nr);currentRaidId=nr.id}
+save();closeModal();showView('raid');toast('Raid saved successfully.')
+};document.getElementById('modalbg').classList.add('show')
+}
+function deleteCurrentRaid(){let r=current();if(!r)return; if(data.settings.confirm&&!confirm('Delete '+r.name+'?'))return;data.raids=data.raids.filter(x=>x.id!==r.id);currentRaidId=data.raids[0]?.id||null;save();if(currentRaidId)showView('raid');else showView('dashboard');toast('Raid deleted.')}
+function openPlayer(id=null){
+let p=id?data.players.find(x=>x.id===id):{name:'',class:'Warrior',spec:'Protection',role:'Tank',status:'No Response',note:''};
+document.getElementById('modalTitle').textContent=id?'Edit Player':'Add Player';
+document.getElementById('modalForm').innerHTML=`<div class="formgrid">
+<div class="field"><label>Player Name</label><input id="pName" value="${esc(p.name)}"></div><div class="field"><label>Class</label><input id="pClass" value="${esc(p.class)}"></div>
+<div class="field"><label>Spec</label><input id="pSpec" value="${esc(p.spec)}"></div><div class="field"><label>Role</label><select id="pRole"><option>Tank</option><option>Healer</option><option>DPS</option></select></div>
+<div class="field"><label>Attendance</label><select id="pStatus"><option>Attending</option><option>Maybe</option><option>Absent</option><option>No Response</option></select></div><div class="field"><label>Note</label><input id="pNote" value="${esc(p.note||'')}"></div></div>`;
+pRole.value=p.role;pStatus.value=p.status;
+document.getElementById('modalSave').onclick=()=>{
+if(!pName.value.trim()){toast('Player name is required.');return}
+let obj={name:pName.value.trim(),class:pClass.value.trim()||'Unknown',spec:pSpec.value.trim()||'Unknown',role:pRole.value,status:pStatus.value,note:pNote.value.trim()||'—'};
+if(id)Object.assign(data.players.find(x=>x.id===id),obj);else data.players.push({id:Date.now(),...obj});
+save();closeModal();renderAll();toast(id?'Player updated.':'Player added.')
+};document.getElementById('modalbg').classList.add('show')
+}
+function closeModal(){document.getElementById('modalbg').classList.remove('show')}
+document.getElementById('modalbg').onclick=e=>{if(e.target.id==='modalbg')closeModal()}
+function renderRaid(){
+let r=current();if(!r){document.getElementById('rName').textContent='No raid created';return}
+document.getElementById('rName').textContent=r.name;document.getElementById('rTagline').textContent=r.tagline;document.getElementById('rDate').textContent=fmtDate(r.date);document.getElementById('rStart').textContent=r.start;document.getElementById('rEnd').textContent=r.end;document.getElementById('rMeet').textContent=r.meet+' (Server Time)';document.getElementById('rDiff').textContent=r.difficulty;
+let classes=[...new Set(data.players.map(p=>p.class))].sort(),cf=document.getElementById('classFilter'),old=cf.value;cf.innerHTML='<option value="">All Classes</option>'+classes.map(x=>`<option>${esc(x)}</option>`).join('');cf.value=classes.includes(old)?old:'';
+let q=document.getElementById('search').value.toLowerCase(),rf=document.getElementById('roleFilter').value,sf=document.getElementById('statusFilter').value;
+let list=data.players.filter(p=>(!q||Object.values(p).join(' ').toLowerCase().includes(q))&&(!cf.value||p.class===cf.value)&&(!rf||p.role===rf)&&(!sf||p.status===sf));
+document.getElementById('roster').innerHTML=list.length?list.map((p,i)=>`<tr><td>${i+1}</td><td><b>${esc(p.name)}</b></td><td>${esc(p.class)}</td><td class="muted">${esc(p.spec)}</td><td class="${p.role.toLowerCase()}">${p.role==='Tank'?'🛡':p.role==='Healer'?'✚':'⚔'} ${p.role}</td><td><select class="status ${p.status.replace(' ','')}" onchange="changeStatus(${p.id},this.value)"><option ${p.status==='Attending'?'selected':''}>Attending</option><option ${p.status==='Maybe'?'selected':''}>Maybe</option><option ${p.status==='Absent'?'selected':''}>Absent</option><option ${p.status==='No Response'?'selected':''}>No Response</option></select></td><td>${esc(p.note||'—')}</td><td class="actions"><button onclick="openPlayer(${p.id})">✎</button><button onclick="removePlayer(${p.id})">♧</button></td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:30px;color:#727b78">No players found.</td></tr>';
+let counts=['Attending','Maybe','Absent','No Response'].map(s=>data.players.filter(p=>p.status===s).length),[a,m,ab,n]=counts,total=Math.max(1,data.players.length),tank=data.players.filter(p=>p.role==='Tank'&&p.status==='Attending').length,heal=data.players.filter(p=>p.role==='Healer'&&p.status==='Attending').length,dps=data.players.filter(p=>p.role==='DPS'&&p.status==='Attending').length;
+document.getElementById('count').textContent=a+'/20';document.getElementById('tank').textContent=tank+'/2';document.getElementById('heal').textContent=heal+'/4';document.getElementById('dps').textContent=dps+'/14';
+document.getElementById('legend').innerHTML=`<div><i class="dot dg"></i>${a} Attending</div><div><i class="dot dy"></i>${m} Maybe</div><div><i class="dot dr"></i>${ab} Absent</div><div><i class="dot dw"></i>${n} No Response</div>`;
+let g=a/total*100,y=m/total*100,rr=ab/total*100;document.getElementById('donut').style.background=`conic-gradient(var(--g) 0 ${g}%,var(--y) ${g}% ${g+y}%,var(--r) ${g+y}% ${g+y+rr}%,#343b39 ${g+y+rr}% 100%)`;
+document.getElementById('bosses').innerHTML=(r.bosses||[]).map((b,i)=>`<div class="boss ${b.state}" onclick="cycleBoss(${i})"><span>${b.state==='done'?'✓':b.state==='current'?'◉':'○'} ${esc(b.name)}</span><span>${b.state}</span></div>`).join('');
+}
+function changeStatus(id,s){let p=data.players.find(x=>x.id===id);if(p){p.status=s;save();renderAll();toast(p.name+' marked '+s.toLowerCase()+'.')}}
+function setAll(s){data.players.forEach(p=>p.status=s);save();renderAll();toast('All players marked '+s.toLowerCase()+'.')}
+function cycleBoss(i){let r=current(),b=r.bosses[i],o=['locked','current','done'];b.state=o[(o.indexOf(b.state)+1)%3];save();renderRaid()}
+function removePlayer(id){let p=data.players.find(x=>x.id===id);if(!p)return;if(data.settings.confirm&&!confirm('Delete '+p.name+' from the roster?'))return;data.players=data.players.filter(x=>x.id!==id);save();renderAll();toast('Player removed.')}
+function renderDashboard(){
+let total=data.players.length,a=data.players.filter(p=>p.status==='Attending').length,att=total?Math.round(a/total*100):0;
+document.getElementById('dashRaids').textContent=data.raids.length;document.getElementById('dashPlayers').textContent=total;document.getElementById('dashAttendance').textContent=att+'%';document.getElementById('dashBar').style.width=att+'%';document.getElementById('dashDonutText').textContent=att+'%';
+document.getElementById('dashDonut').style.background=`conic-gradient(var(--g) 0 ${att}%,#343b39 ${att}% 100%)`;
+let next=[...data.raids].sort((a,b)=>a.date.localeCompare(b.date))[0];document.getElementById('dashNext').textContent=next?.name||'—';document.getElementById('dashNextDate').textContent=next?fmtDate(next.date):'No raids scheduled';
+document.getElementById('dashLegend').innerHTML=`<div><i class="dot dg"></i>${a} Attending</div><div><i class="dot dy"></i>${data.players.filter(p=>p.status==='Maybe').length} Maybe</div><div><i class="dot dr"></i>${data.players.filter(p=>p.status==='Absent').length} Absent</div>`;
+document.getElementById('dashRaidList').innerHTML=data.raids.length?data.raids.map(r=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #202725"><div><b>${esc(r.name)}</b><div class="muted" style="font-size:11px">${fmtDate(r.date)} • ${r.start}–${r.end} • ${r.difficulty}</div></div><button class="btn" onclick="currentRaidId=${r.id};showView('raid')">Open</button></div>`).join(''):'<div class="muted">No raids scheduled.</div>';
+}
+function changeMonth(n){calDate.setMonth(calDate.getMonth()+n);renderCalendar()}function goToday(){calDate=new Date();renderCalendar()}
+function renderCalendar(){
+document.getElementById('monthLabel').textContent=calDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+let y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),prev=new Date(y,m,0).getDate(),g=document.getElementById('calendarGrid');let out=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x=>`<div class="calHead">${x}</div>`).join('');
+for(let i=0;i<42;i++){let num=i-start+1,day=num,month=m,year=y,muted=false;if(num<1){day=prev+num;month--;muted=true}else if(num>days){day=num-days;month++;muted=true}let ds=new Date(year,month,day).toISOString().slice(0,10),today=new Date().toISOString().slice(0,10),events=data.raids.filter(r=>r.date===ds);out+=`<div class="day ${muted?'mutedDay':''} ${ds===today?'today':''}"><div class="daynum">${day}</div>${events.map(r=>`<div class="event ${r.difficulty.toLowerCase()}" onclick="currentRaidId=${r.id};showView('raid')"><b>${esc(r.name)}</b><br>${r.start} • ${r.difficulty}</div>`).join('')}</div>`}g.innerHTML=out;
+}
+function renderPlayers(){
+let q=(document.getElementById('playerSearch')?.value||'').toLowerCase(),role=document.getElementById('playerRoleFilter')?.value||'',list=data.players.filter(p=>(!q||Object.values(p).join(' ').toLowerCase().includes(q))&&(!role||p.role===role));
+document.getElementById('playerCards').innerHTML=list.length?list.map(p=>`<div class="card pcard"><h3>${esc(p.name)}</h3><div class="line">${esc(p.class)} • ${esc(p.spec)}</div><div class="line ${p.role.toLowerCase()}">${p.role}</div><div class="line">Default attendance: <b class="${p.status}">${p.status}</b></div><div class="line">${esc(p.note||'—')}</div><div class="pc-actions"><button class="btn" onclick="openPlayer(${p.id})">✎ Edit</button><button class="btn danger" onclick="removePlayer(${p.id})">Delete</button></div></div>`).join(''):'<div class="card pad muted">No players found.</div>'
+}
+function renderStats(){
+let p=data.players,ct=s=>p.filter(x=>x.status===s).length, roles=['Tank','Healer','DPS'],total=Math.max(1,p.length);
+document.getElementById('sPlayers').textContent=p.length;document.getElementById('sAttending').textContent=ct('Attending');document.getElementById('sMaybe').textContent=ct('Maybe');document.getElementById('sAbsent').textContent=ct('Absent');
+document.getElementById('roleStats').innerHTML=roles.map(r=>{let n=p.filter(x=>x.role===r).length,pct=Math.round(n/total*100);return `<div style="margin:13px 0"><div style="display:flex;justify-content:space-between"><span>${r}</span><b>${n}</b></div><div class="bar"><span style="width:${pct}%"></span></div></div>`}).join('');
+document.getElementById('attStats').innerHTML=['Attending','Maybe','Absent','No Response'].map(s=>{let n=ct(s),pct=Math.round(n/total*100);return `<div style="margin:13px 0"><div style="display:flex;justify-content:space-between"><span>${s}</span><b>${n} (${pct}%)</b></div><div class="bar"><span style="width:${pct}%"></span></div></div>`}).join('');
+}
+function renderSettings(){let s=data.settings;setGuild.value=data.guild;setStart.value=s.start;setEnd.value=s.end;fxSwitch.classList.toggle('on',s.fx);compactSwitch.classList.toggle('on',s.compact);confirmSwitch.classList.toggle('on',s.confirm)}
+function saveSettings(){data.guild=setGuild.value.trim()||'XEON';data.settings.start=setStart.value||'20:00';data.settings.end=setEnd.value||'23:00';save();toast('Settings saved.')}
+function toggleFx(){data.settings.fx=!data.settings.fx;save();fxSwitch.classList.toggle('on',data.settings.fx);document.querySelector('.banner').style.animation=data.settings.fx?'':'none'}
+function toggleCompact(){data.settings.compact=!data.settings.compact;save();compactSwitch.classList.toggle('on',data.settings.compact);document.body.style.fontSize=data.settings.compact?'13px':'14px'}
+function toggleConfirm(){data.settings.confirm=!data.settings.confirm;save();confirmSwitch.classList.toggle('on',data.settings.confirm)}
+function clearAllData(){if(confirm('Reset all XEON planner data to the demo data?')){data=structuredClone(demo);currentRaidId=data.raids[0].id;save();renderAll();showView('dashboard');toast('All data reset.')}}
+function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='xeon-raid-planner.json';a.click();URL.revokeObjectURL(a.href);toast('Data exported.')}
+document.getElementById('importFile').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.players||!x.raids)throw 0;data=x;currentRaidId=data.raids[0]?.id||null;save();renderAll();toast('Data imported.')}catch{alert('Invalid XEON planner file.')}};r.readAsText(f);e.target.value=''}
+['search','classFilter','roleFilter','statusFilter'].forEach(id=>document.getElementById(id).addEventListener(id==='search'?'input':'change',renderRaid));
+document.getElementById('playerSearch').oninput=renderPlayers;document.getElementById('playerRoleFilter').onchange=renderPlayers;
+function renderAll(){renderDashboard();renderRaid();renderCalendar();renderPlayers();renderStats();renderSettings()}
+renderAll();showView('dashboard');
+</script>
+</body>
+</html>
